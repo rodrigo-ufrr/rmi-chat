@@ -1,24 +1,27 @@
 package com.gohlares.messenger;
 
-import com.gohlares.messenger.interfaces.PeerInterface;
+import rmi.interfaces.PeerInterface;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 
 public class Client {
+    private final PeerInfo info;
 
-    private Client() {}
-
-    public static void main(String[] args) {
-
-    String host = (args.length < 1) ? null : args[0];
-    try {
-        Registry registry = LocateRegistry.getRegistry("127.0.0.1", 1098);
-        PeerInterface stub = (PeerInterface) registry.lookup("Hello");
-        boolean response = stub.send(new Message("oi"));
-        System.out.println("response: " + response);
-    } catch (Exception e) {
-        System.err.println("Client exception: " + e.toString());
-        e.printStackTrace();
+    public Client(PeerInfo info) {
+        this.info = info;
     }
+    
+    public void send() {
+        try {
+            Registry registry = LocateRegistry.getRegistry(info.getIp(), 1099);
+            PeerInterface peer = (PeerInterface) registry.lookup("Peer");
+//            peer.isAlive();
+            boolean response = peer.send(info, new Message("oi"));
+            
+            System.out.println(response ? "Enviado." : "Não enviado.");
+        } catch (Exception e) {
+            System.err.println("Client exception: " + e.toString());
+            e.printStackTrace();
+        }
     }
 }

@@ -2,30 +2,40 @@ package com.gohlares.messenger;
 
 import com.gohlares.messenger.interfaces.MessageInterface;
 import com.gohlares.messenger.interfaces.PeerInfoInterface;
-import com.gohlares.messenger.interfaces.PeerInterface;
+import rmi.interfaces.PeerInterface;
 import java.rmi.RemoteException;
+import java.util.UUID;
 
 public class Peer implements PeerInterface{
+    private UUID uuid = null;
+    private PeerInfo info;
+
+    public Peer(PeerInfo info) {
+        this.info = info;
+    }
 
     @Override
-    public String getUUID() throws RemoteException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public String getUUID() {
+        if (this.uuid == null) {
+            this.uuid = UUID.randomUUID();
+        }
+        return this.uuid.toString();
     }
 
     @Override
     public PeerInfoInterface getInfo() throws RemoteException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return this.info;
     }
 
     @Override
-    public boolean send(MessageInterface msg) throws RemoteException {
-        System.out.println("Recebido: " + msg.getBody());
-        return false;//throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public boolean send(PeerInfoInterface from, MessageInterface msg) throws RemoteException {
+        System.out.println("Recebido de "+ from.getUserName() +": " + msg.getBody());
+        return true;
     }
 
     @Override
     public boolean isAlive() throws RemoteException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return true;
     }
     
 }

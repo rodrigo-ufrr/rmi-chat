@@ -1,18 +1,22 @@
 package com.gohlares.messenger;
 
-import com.gohlares.messenger.interfaces.PeerInterface;
+import rmi.interfaces.PeerInterface;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 
 public class Main {
+    static Registry registry;
+    static Peer peer;
     public static void main(String args[]) {
+//        Client c = new Client(new PeerInfo("192.168.2.6", "bunda"));
+//        c.send();
 	try {
-	    Peer obj = new Peer();
-	    PeerInterface stub = (PeerInterface) UnicastRemoteObject.exportObject(obj, 0);
+	    peer = new Peer(new PeerInfo("192.168.2.22", "Rodrigost23"));
+	    PeerInterface peerInterface = (PeerInterface) UnicastRemoteObject.exportObject(peer, 1099);
 
-	    Registry registry = LocateRegistry.createRegistry(1098);
-	    registry.bind("PeerInterface", stub);
+	    registry = LocateRegistry.createRegistry(1099);
+	    registry.bind("Peer", peerInterface);
 
 	    System.err.println("Server ready");
 

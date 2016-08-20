@@ -24,12 +24,12 @@ public class PeerInfo implements PeerInfoInterface{
 
     @Override
     public String getIp() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return this.ip;
     }
 
     @Override
     public String getUserName() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return this.username;
     }
     
 }
