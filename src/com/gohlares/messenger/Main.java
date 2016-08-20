@@ -15,7 +15,6 @@ public class Main {
 	    registry.bind("PeerInterface", stub);
 
 	    System.err.println("Server ready");
-            registry.unbind("PeerInterface");
 
 	} catch (Exception e) {
 	    System.err.println("Server exception: " + e.toString());
