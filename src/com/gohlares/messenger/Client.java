@@ -14,7 +14,7 @@ public class Client {
     try {
         Registry registry = LocateRegistry.getRegistry("127.0.0.1", 1098);
         PeerInterface stub = (PeerInterface) registry.lookup("Hello");
-        String response = stub.getUUID();
+        boolean response = stub.send(new Message("oi"));
         System.out.println("response: " + response);
     } catch (Exception e) {
         System.err.println("Client exception: " + e.toString());
