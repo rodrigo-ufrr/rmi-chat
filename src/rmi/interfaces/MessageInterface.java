@@ -1,4 +1,4 @@
-package com.gohlares.messenger.interfaces;
+package rmi.interfaces;
 
 import java.io.Serializable;
 import java.util.Date;

@@ -1,16 +1,16 @@
-package com.gohlares.messenger;
+package rmi;
 
-import com.gohlares.messenger.interfaces.MessageInterface;
-import com.gohlares.messenger.interfaces.PeerInfoInterface;
+import rmi.interfaces.MessageInterface;
+import rmi.interfaces.PeerInfoInterface;
 import rmi.interfaces.PeerInterface;
 import java.rmi.RemoteException;
 import java.util.UUID;
 
 public class Peer implements PeerInterface{
     private UUID uuid = null;
-    private PeerInfo info;
+    private PeerInfoInterface info;
 
-    public Peer(PeerInfo info) {
+    public Peer(PeerInfoInterface info) {
         this.info = info;
     }
 

@@ -1,13 +1,14 @@
-package com.gohlares.messenger;
+package rmi;
 
 import java.util.UUID;
 
-import com.gohlares.messenger.interfaces.PeerInfoInterface;
+import rmi.interfaces.PeerInfoInterface;
 
 public class PeerInfo implements PeerInfoInterface{
+    private static final long serialVersionUID = 1;
     private UUID uuid = null;
-    private String ip;
-    private String username;
+    private final String ip;
+    private final String username;
 
     public PeerInfo(String ip, String username) {
         this.ip = ip;

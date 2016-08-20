@@ -1,9 +1,10 @@
-package com.gohlares.messenger;
+package rmi;
 
-import com.gohlares.messenger.interfaces.MessageInterface;
+import rmi.interfaces.MessageInterface;
 import java.util.Date;
 
 public class Message implements MessageInterface{
+    private static final long serialVersionUID = 1;
     private final String body;
 
     public Message(String body) {

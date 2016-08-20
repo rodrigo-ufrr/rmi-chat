@@ -1,7 +1,5 @@
 package rmi.interfaces;
 
-import com.gohlares.messenger.interfaces.MessageInterface;
-import com.gohlares.messenger.interfaces.PeerInfoInterface;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 
