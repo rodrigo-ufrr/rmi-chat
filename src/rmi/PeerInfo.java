@@ -12,6 +12,7 @@ public class PeerInfo implements PeerInfoInterface{
     protected String userName;
 
     public PeerInfo(String ip, String username) {
+        // TODO: Save UUID on disk
         this.uuid = UUID.randomUUID().toString();
         this.ip = ip;
         this.userName = username;

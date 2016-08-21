@@ -117,17 +117,16 @@ public class Main extends javax.swing.JFrame {
         }
         //</editor-fold>
         
-        Server s = new Server();
-        s.teste();
+        // TODO: get port and username from settings
+        Server s = new Server(1099, "User");
+        s.listen();
         
         //Client c = new Client(new PeerInfo("192.168.122.1", "Rodrigo"));
         //c.send("192.168.2.4");
 
         /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new Main().setVisible(true);
-            }
+        java.awt.EventQueue.invokeLater(() -> {
+            new Main().setVisible(true);
         });
     }
 

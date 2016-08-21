@@ -17,7 +17,6 @@ public class Peer extends UnicastRemoteObject implements PeerInterface{
 
     @Override
     public String getUUID() {
-        System.out.println("UUID " + this.info.getUUID());
         return this.info.getUUID();
     }
 
@@ -28,7 +27,7 @@ public class Peer extends UnicastRemoteObject implements PeerInterface{
 
     @Override
     public boolean send(PeerInfoInterface from, MessageInterface msg) throws RemoteException {
-        System.err.println("Recebido de "+ from.getUserName() +": " + msg.getBody());
+        System.err.println("Message received from "+ from.getUserName() +": " + msg.getBody());
         return true;
     }
 

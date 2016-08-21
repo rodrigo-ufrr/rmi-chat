@@ -1,43 +1,46 @@
 package com.gohlares.messenger;
 
-import static com.gohlares.messenger.Main.peer;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.rmi.AlreadyBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import rmi.Message;
 import rmi.Peer;
 import rmi.PeerInfo;
 import rmi.interfaces.PeerInterface;
 
 public class Server {
     static Peer peer;
-    private String port = null;
+    static Registry registry;
+    private String ip;
+    private int port;
+    private String username;
 
-    public Server() {
+    public Server(int port, String username) {
+        this.port = port;
+        this.username = username;
         try {
-            peer = new Peer(new PeerInfo("192.168.2.22", "Rodrigost23"));
-        } catch (RemoteException ex) {
-            Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
+            this.ip = InetAddress.getLocalHost().getHostAddress();
+            peer = new Peer(new PeerInfo(this.ip, this.username));
+        } catch (UnknownHostException | RemoteException e) {
+	    System.err.println("Server exception: " + e.toString());
         }
     }
     
-    public void teste() {
+    public void listen() {
         try {
             UnicastRemoteObject.unexportObject(peer, true);
-	    PeerInterface peerInterface = (PeerInterface) UnicastRemoteObject.exportObject(peer, 1099);
+	    PeerInterface peerInterface = (PeerInterface) UnicastRemoteObject.exportObject(peer, this.port);
 
-	    Registry registry = LocateRegistry.createRegistry(1099);
+	    registry = LocateRegistry.createRegistry(this.port);
 	    registry.bind("Peer", peerInterface);
 
-	    System.err.println("Server ready");
-            peer.send(new PeerInfo(null, "OI"), new Message("oi"));
+	    System.out.println("Server started on "+ this.ip +":"+ this.port +" as " + this.username);
 
-	} catch (Exception e) {
+	} catch (RemoteException | AlreadyBoundException e) {
 	    System.err.println("Server exception: " + e.toString());
-	    e.printStackTrace();
 	}
     }
 }
