@@ -93,6 +93,7 @@ public class Main extends javax.swing.JFrame {
 
     static Registry registry;
     static Peer peer;
+    static String user = "User"; // TODO: get user from settings
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
@@ -118,11 +119,12 @@ public class Main extends javax.swing.JFrame {
         //</editor-fold>
         
         // TODO: get port and username from settings
-        Server s = new Server(1099, "User");
+        Server s = new Server(1099, user);
         s.listen();
         
-        //Client c = new Client(new PeerInfo("192.168.122.1", "Rodrigo"));
-        //c.send("192.168.2.4");
+        // TODO: get port and username from settings
+        Client c = new Client(1099, user);
+        c.send("127.0.0.1", "Teste!");
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(() -> {
