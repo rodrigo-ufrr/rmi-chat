@@ -12,6 +12,6 @@ public class Main {
         s.teste();
         
 //	Client c = new Client(new PeerInfo("192.168.122.1", "Rodrigo"));
-//        c.send("10.42.0.125");
+//        c.send("192.168.2.4");
     }
 }

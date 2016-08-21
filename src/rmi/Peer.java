@@ -4,22 +4,21 @@ import rmi.interfaces.MessageInterface;
 import rmi.interfaces.PeerInfoInterface;
 import rmi.interfaces.PeerInterface;
 import java.rmi.RemoteException;
-import java.util.UUID;
+import java.rmi.server.UnicastRemoteObject;
 
-public class Peer implements PeerInterface{
-    private UUID uuid = null;
-    private PeerInfoInterface info;
+public class Peer extends UnicastRemoteObject implements PeerInterface{
+    
+    protected PeerInfo info;
 
-    public Peer(PeerInfoInterface info) {
+    public Peer(PeerInfo info) throws RemoteException{
+        super();
         this.info = info;
     }
 
     @Override
     public String getUUID() {
-        if (this.uuid == null) {
-            this.uuid = UUID.randomUUID();
-        }
-        return this.uuid.toString();
+        System.out.println("UUID " + this.info.getUUID());
+        return this.info.getUUID();
     }
 
     @Override
@@ -29,7 +28,7 @@ public class Peer implements PeerInterface{
 
     @Override
     public boolean send(PeerInfoInterface from, MessageInterface msg) throws RemoteException {
-        System.out.println("Recebido de "+ from.getUserName() +": " + msg.getBody());
+        System.err.println("Recebido de "+ from.getUserName() +": " + msg.getBody());
         return true;
     }
 

@@ -6,21 +6,20 @@ import rmi.interfaces.PeerInfoInterface;
 
 public class PeerInfo implements PeerInfoInterface{
     private static final long serialVersionUID = 1;
-    private UUID uuid = null;
-    private final String ip;
-    private final String username;
+    
+    protected String uuid;
+    protected String ip;
+    protected String userName;
 
     public PeerInfo(String ip, String username) {
+        this.uuid = UUID.randomUUID().toString();
         this.ip = ip;
-        this.username = username;
+        this.userName = username;
     }
 
     @Override
     public String getUUID() {
-        if (this.uuid == null) {
-            this.uuid = UUID.randomUUID();
-        }
-        return this.uuid.toString();
+        return this.uuid;
     }
 
     @Override
@@ -30,7 +29,7 @@ public class PeerInfo implements PeerInfoInterface{
 
     @Override
     public String getUserName() {
-        return this.username;
+        return this.userName;
     }
     
 }

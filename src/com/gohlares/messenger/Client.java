@@ -20,7 +20,7 @@ public class Client {
 //            peer.isAlive();
             boolean response = peer.send(info, new Message("oi"));
             
-            System.out.println(response ? "Enviado." : "Não enviado.");
+            System.out.println(response ? "Enviado - " + peer.getInfo().getUserName() : "Não enviado.");
         } catch (Exception e) {
             System.err.println("Client exception: " + e.toString());
             e.printStackTrace();
