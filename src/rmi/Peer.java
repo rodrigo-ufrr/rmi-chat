@@ -35,5 +35,14 @@ public class Peer extends UnicastRemoteObject implements PeerInterface{
     public boolean isAlive() throws RemoteException {
         return true;
     }
-    
+
+    @Override
+    public String toString() {
+        try {
+            return this.getInfo().getUserName();
+        } catch (RemoteException ex) {
+            System.err.println(ex.getMessage());
+            return super.toString();
+        }
+    }
 }

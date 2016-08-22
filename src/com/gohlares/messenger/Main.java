@@ -1,15 +1,37 @@
 package com.gohlares.messenger;
 
+import java.rmi.RemoteException;
 import java.rmi.registry.Registry;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.DefaultListModel;
 import rmi.Peer;
+import rmi.PeerInfo;
 
 public class Main extends javax.swing.JFrame {
+    private DefaultListModel usersModel = null;
 
     /**
      * Creates new form Main
      */
     public Main() {
         initComponents();
+
+        this.updateList();
+    }
+
+    private void updateList() {
+        if (usersModel == null)
+            usersModel = new DefaultListModel<>();
+
+        usersList.setModel(usersModel);
+
+        // TODO: pegar lista de usuários do broadcast
+        try {
+            usersModel.add(0, new Peer(new PeerInfo("127.0.0.1", user)));
+        } catch (RemoteException ex) {
+            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     /**
@@ -148,10 +170,10 @@ public class Main extends javax.swing.JFrame {
         }
         //</editor-fold>
 
-        // TODO: get port and username from settings
+        // TODO: ge    t port and username from settings
         Server s = new Server(1099, user);
         s.listen();
-        
+
         // TODO: get port and username from settings
         Client c = new Client(1099, user);
         c.send("127.0.0.1", "Teste!");
