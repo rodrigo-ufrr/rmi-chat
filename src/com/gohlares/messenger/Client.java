@@ -12,10 +12,17 @@ import java.util.logging.Logger;
 import rmi.Message;
 import rmi.PeerInfo;
 
+/**
+ * Classe responsável por enviar mensagens para outros usuários
+ */
 public class Client {
     private final PeerInfo info;
     private final int port;
 
+    /**
+     * @param port A porta a ser usada pelo RMI.
+     * @param username O nome de usuário deste peer.
+     */
     public Client(int port, String username) {
         this.port = port;
 
@@ -28,6 +35,11 @@ public class Client {
         this.info = new PeerInfo(ip, username);
     }
 
+    /**
+     * Envia uma mensagem para outro usuário.
+     * @param ip O IP de destino.
+     * @param body O conteúdo da mensagem.
+     */
     public void send(String ip, String body) {
         try {
             Registry registry = LocateRegistry.getRegistry(ip, this.port);
