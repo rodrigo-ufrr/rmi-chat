@@ -1,5 +1,6 @@
 package rmi;
 
+import java.rmi.RemoteException;
 import java.util.UUID;
 
 import rmi.interfaces.PeerInfoInterface;
@@ -32,5 +33,9 @@ public class PeerInfo implements PeerInfoInterface{
     public String getUserName() {
         return this.userName;
     }
-    
+
+    @Override
+    public String toString() {
+        return this.getUserName();
+    }
 }

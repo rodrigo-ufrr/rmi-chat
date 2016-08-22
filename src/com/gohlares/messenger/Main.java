@@ -1,21 +1,48 @@
 package com.gohlares.messenger;
 
-import java.rmi.RemoteException;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.rmi.registry.Registry;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import javax.swing.DefaultListModel;
+import javax.swing.event.ListSelectionEvent;
+import rmi.Message;
 import rmi.Peer;
 import rmi.PeerInfo;
 
 public class Main extends javax.swing.JFrame {
     private DefaultListModel usersModel = null;
+    private PeerInfo currentChat = null;
+    private Map<String, ArrayList<Message>> messages = new HashMap<>();
 
     /**
      * Creates new form Main
      */
     public Main() {
         initComponents();
+
+        // TODO: get port and username from settings
+        Server s = new Server(1099, user);
+        s.listen();
+
+        // TODO: get port and username from settings
+        Client c = new Client(1099, user);
+        c.send("127.0.0.1", "Teste!");
+        
+        messageField.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_ENTER)
+                    sendMessage();
+            }
+        });
+        usersList.addListSelectionListener((ListSelectionEvent e) -> {
+            this.currentChat = (PeerInfo) usersModel.get(e.getFirstIndex());
+            this.loadChat();
+        });
 
         this.updateList();
     }
@@ -26,12 +53,35 @@ public class Main extends javax.swing.JFrame {
 
         usersList.setModel(usersModel);
 
-        // TODO: pegar lista de usuários do broadcast
-        try {
-            usersModel.add(0, new Peer(new PeerInfo("127.0.0.1", user)));
-        } catch (RemoteException ex) {
-            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+        usersModel.add(0, new PeerInfo("127.0.0.1", user));
+    }
+    
+    private void loadChat() {
+        
+        messageArea.setText("");
+        
+        String key = this.currentChat.getUUID();
+        
+        if (this.messages.containsKey(key)) {
+            this.messages.get(key).stream().forEach((m) -> {
+                messageArea.setText(messageArea.getText() + "\n" + m.getBody());
+            });
         }
+    }
+
+    private void sendMessage() {
+        String key = this.currentChat.getUUID();
+        
+        if (!this.messages.containsKey(key)) {
+            this.messages.put(key, new ArrayList<>());
+        }
+        
+        String body = messageField.getText();
+        this.messages.get(key).add(new Message(body));
+        
+        messageField.setText("");
+        
+        loadChat();
     }
 
     /**
@@ -169,14 +219,6 @@ public class Main extends javax.swing.JFrame {
         java.util.logging.Logger.getLogger(Main.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
-
-        // TODO: ge    t port and username from settings
-        Server s = new Server(1099, user);
-        s.listen();
-
-        // TODO: get port and username from settings
-        Client c = new Client(1099, user);
-        c.send("127.0.0.1", "Teste!");
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(() -> {
