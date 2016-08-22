@@ -3,10 +3,11 @@ package com.gohlares.messenger;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.IOException;
-import java.rmi.registry.Registry;
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.Callable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.DefaultListModel;
@@ -17,15 +18,14 @@ import javax.swing.text.StyleConstants;
 import javax.swing.text.html.HTML;
 import javax.swing.text.html.HTMLDocument;
 import rmi.Message;
-import rmi.Peer;
 import rmi.PeerInfo;
+import rmi.interfaces.MessageInterface;
+import rmi.interfaces.PeerInfoInterface;
 
 public class Main extends javax.swing.JFrame {
     
-    static Registry registry;
     static Server server;
     static Client client;
-    static Peer peer;
     static PeerInfo myInfo;
     static String user = "User"; // TODO: get user from settings
     
@@ -41,11 +41,12 @@ public class Main extends javax.swing.JFrame {
 
         // TODO: get port and username from settings
         server = new Server(1099, user);
-        server.listen();
+        server.listen((PeerInfoInterface from, MessageInterface message) -> {
+            receiveMessage(from, message);
+        });
 
         // TODO: get port and username from settings
         client = new Client(1099, user);
-        client.send("127.0.0.1", "Teste!");
         
         messageField.addKeyListener(new KeyAdapter() {
             @Override
@@ -68,13 +69,19 @@ public class Main extends javax.swing.JFrame {
 
         usersList.setModel(usersModel);
 
-        usersModel.add(0, new PeerInfo("127.0.0.1", user));
-        usersModel.add(0, new PeerInfo("192.168.0.104", "Rafael"));
+        usersModel.add(0, server.getInfo());
+//        try {
+//            usersModel.add(1, client.get("192.168.0.104").getInfo());
+//        } catch (RemoteException ex) {
+//            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+//        }
     }
     
     private void loadChat() {
 
         String key = this.currentChat.getUUID();
+        if (key == null)
+            return;
                 
         HTMLDocument doc = (HTMLDocument) messageArea.getDocument();
         Element body = doc.getElement(doc.getDefaultRootElement(), StyleConstants.NameAttribute, HTML.Tag.BODY);
@@ -104,21 +111,31 @@ public class Main extends javax.swing.JFrame {
             });
         }
     }
-
-    private void sendMessage() {
-        String key = this.currentChat.getUUID();
-        
+    
+    private void addMessage(String key, String body) {
         if (!this.messages.containsKey(key)) {
             this.messages.put(key, new ArrayList<>());
         }
-        
-        String body = messageField.getText();
         // TODO: Pegar PeerInfo automaticamente
         this.messages.get(key).add(new MessageTuple(null, body));
+    }
+
+    private void sendMessage() {
+        String key = this.currentChat.getUUID();
+        String body = messageField.getText();
+        addMessage(key, body);
         
         messageField.setText("");
         
         client.send(this.currentChat.getIp(), body);
+        
+        loadChat();
+    }
+
+    private void receiveMessage(PeerInfoInterface from, MessageInterface message) {
+        String key = from.getUUID();
+        String body = message.getBody();
+        addMessage(key, body);
         
         loadChat();
     }
@@ -264,7 +281,7 @@ public class Main extends javax.swing.JFrame {
             new Main().setVisible(true);
         });
     }
-    
+
     public class MessageTuple { 
         public final PeerInfo from; 
         public final Message message;

@@ -7,8 +7,12 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import rmi.Peer;
 import rmi.PeerInfo;
+import rmi.interfaces.MessageInterface;
+import rmi.interfaces.PeerInfoInterface;
 import rmi.interfaces.PeerInterface;
 
 public class Server {
@@ -23,14 +27,15 @@ public class Server {
         this.username = username;
         try {
             this.ip = InetAddress.getLocalHost().getHostAddress();
-            peer = new Peer(new PeerInfo(this.ip, this.username));
-        } catch (UnknownHostException | RemoteException e) {
+        } catch (UnknownHostException e) {
 	    System.err.println("Server exception: " + e.toString());
         }
     }
     
-    public void listen() {
+    public void listen(MessageCallback callback) {
         try {
+            peer = new Peer(new PeerInfo(this.ip, this.username), callback);
+
             UnicastRemoteObject.unexportObject(peer, true);
 	    PeerInterface peerInterface = (PeerInterface) UnicastRemoteObject.exportObject(peer, this.port);
 
@@ -42,5 +47,18 @@ public class Server {
 	} catch (RemoteException | AlreadyBoundException e) {
 	    System.err.println("Server exception: " + e.toString());
 	}
+    }
+    
+    public interface MessageCallback {
+        public void run(PeerInfoInterface from, MessageInterface message);
+    }
+    
+    public PeerInfo getInfo() {
+        try {
+            return (PeerInfo) this.peer.getInfo();
+        } catch (RemoteException ex) {
+            Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        }
     }
 }
