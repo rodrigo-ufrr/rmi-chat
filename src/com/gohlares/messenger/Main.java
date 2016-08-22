@@ -2,21 +2,34 @@ package com.gohlares.messenger;
 
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.io.IOException;
 import java.rmi.registry.Registry;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.DefaultListModel;
 import javax.swing.event.ListSelectionEvent;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Element;
+import javax.swing.text.StyleConstants;
+import javax.swing.text.html.HTML;
+import javax.swing.text.html.HTMLDocument;
 import rmi.Message;
 import rmi.Peer;
 import rmi.PeerInfo;
 
 public class Main extends javax.swing.JFrame {
+    
+    static Registry registry;
+    static Peer peer;
+    static PeerInfo myInfo;
+    static String user = "User"; // TODO: get user from settings
+    
     private DefaultListModel usersModel = null;
     private PeerInfo currentChat = null;
-    private Map<String, ArrayList<Message>> messages = new HashMap<>();
+    private Map<String, ArrayList<MessageTuple>> messages = new HashMap<>();
 
     /**
      * Creates new form Main
@@ -54,17 +67,33 @@ public class Main extends javax.swing.JFrame {
         usersList.setModel(usersModel);
 
         usersModel.add(0, new PeerInfo("127.0.0.1", user));
+        usersModel.add(0, new PeerInfo("192.168.0.104", "Rafael"));
     }
     
     private void loadChat() {
-        
-        messageArea.setText("");
-        
+
         String key = this.currentChat.getUUID();
         
         if (this.messages.containsKey(key)) {
             this.messages.get(key).stream().forEach((m) -> {
-                messageArea.setText(messageArea.getText() + "\n" + m.getBody());
+                
+                String from;
+                if (m.from == null) { // TODO: Checar se é o próprio usuário
+                    from = "<font color='navy' style='font-weight:bold;'>Você:</font> ";
+                } else {
+                    from = "<font color='darkgreen' style='font-weight:bold;'>"+ m.from.getUserName() +"</font>";
+                }
+                
+                HTMLDocument doc = (HTMLDocument) messageArea.getDocument();
+                
+                Element body = doc.getElement(doc.getDefaultRootElement(), StyleConstants.NameAttribute, HTML.Tag.BODY);
+                
+                try {
+                    doc.insertBeforeEnd(body, "<p>"+ from + m.message.getBody() + "</p>");
+
+                } catch (BadLocationException | IOException ex) {
+                    Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+                }
             });
         }
     }
@@ -77,7 +106,8 @@ public class Main extends javax.swing.JFrame {
         }
         
         String body = messageField.getText();
-        this.messages.get(key).add(new Message(body));
+        // TODO: Pegar PeerInfo automaticamente
+        this.messages.get(key).add(new MessageTuple(null, body));
         
         messageField.setText("");
         
@@ -96,7 +126,8 @@ public class Main extends javax.swing.JFrame {
         jSplitPane = new javax.swing.JSplitPane();
         rightPanel = new javax.swing.JPanel();
         messageField = new javax.swing.JTextField();
-        messageArea = new javax.swing.JTextArea();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        messageArea = new javax.swing.JEditorPane();
         leftPanel = new javax.swing.JPanel();
         userToolbar = new javax.swing.JToolBar();
         filler2 = new javax.swing.Box.Filler(new java.awt.Dimension(8, 0), new java.awt.Dimension(8, 0), new java.awt.Dimension(8, 32767));
@@ -112,25 +143,27 @@ public class Main extends javax.swing.JFrame {
         jSplitPane.setContinuousLayout(true);
         jSplitPane.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
 
+        jScrollPane1.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+
         messageArea.setEditable(false);
-        messageArea.setColumns(20);
-        messageArea.setLineWrap(true);
-        messageArea.setRows(5);
+        messageArea.setContentType("text/html"); // NOI18N
+        messageArea.setText("<html>\n  <head>\n\n  </head>\n  <body>\n\n  </body>\n</html>\n");
+        jScrollPane1.setViewportView(messageArea);
 
         javax.swing.GroupLayout rightPanelLayout = new javax.swing.GroupLayout(rightPanel);
         rightPanel.setLayout(rightPanelLayout);
         rightPanelLayout.setHorizontalGroup(
             rightPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(messageArea)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, rightPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(messageField)
+                .addComponent(messageField, javax.swing.GroupLayout.DEFAULT_SIZE, 399, Short.MAX_VALUE)
                 .addContainerGap())
+            .addComponent(jScrollPane1)
         );
         rightPanelLayout.setVerticalGroup(
             rightPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(rightPanelLayout.createSequentialGroup()
-                .addComponent(messageArea, javax.swing.GroupLayout.DEFAULT_SIZE, 307, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 307, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(messageField, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
@@ -193,9 +226,6 @@ public class Main extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    static Registry registry;
-    static Peer peer;
-    static String user = "User"; // TODO: get user from settings
     public static void main(String args[]) {
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
@@ -225,13 +255,29 @@ public class Main extends javax.swing.JFrame {
             new Main().setVisible(true);
         });
     }
+    
+    public class MessageTuple { 
+        public final PeerInfo from; 
+        public final Message message;
+        
+        public MessageTuple(PeerInfo from, Message message) { 
+            this.from = from; 
+            this.message = message; 
+        }
+        
+        public MessageTuple(PeerInfo from, String body) { 
+            this.from = from;
+            this.message = new Message(body);
+        }
+    } 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.Box.Filler filler1;
     private javax.swing.Box.Filler filler2;
+    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JSplitPane jSplitPane;
     private javax.swing.JPanel leftPanel;
-    private javax.swing.JTextArea messageArea;
+    private javax.swing.JEditorPane messageArea;
     private javax.swing.JTextField messageField;
     private javax.swing.JPanel rightPanel;
     private javax.swing.JButton settingsButton;
