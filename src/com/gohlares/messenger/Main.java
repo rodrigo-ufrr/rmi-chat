@@ -22,17 +22,17 @@ public class Main extends javax.swing.JFrame {
     private void initComponents() {
 
         jSplitPane = new javax.swing.JSplitPane();
-        rightPane = new javax.swing.JPanel();
-        mensagemField = new javax.swing.JTextField();
-        jTextArea1 = new javax.swing.JTextArea();
-        jPanel1 = new javax.swing.JPanel();
-        jToolBar1 = new javax.swing.JToolBar();
+        rightPanel = new javax.swing.JPanel();
+        messageField = new javax.swing.JTextField();
+        messageArea = new javax.swing.JTextArea();
+        leftPanel = new javax.swing.JPanel();
+        userToolbar = new javax.swing.JToolBar();
         filler2 = new javax.swing.Box.Filler(new java.awt.Dimension(8, 0), new java.awt.Dimension(8, 0), new java.awt.Dimension(8, 32767));
-        jLabel1 = new javax.swing.JLabel();
+        userName = new javax.swing.JLabel();
         filler1 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(32767, 0));
-        jButton1 = new javax.swing.JButton();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        jList1 = new javax.swing.JList<>();
+        editProfileButton = new javax.swing.JButton();
+        usersPane = new javax.swing.JScrollPane();
+        usersList = new javax.swing.JList<>();
         jMenuBar = new javax.swing.JMenuBar();
         jMenu2 = new javax.swing.JMenu();
         jMenu3 = new javax.swing.JMenu();
@@ -40,76 +40,74 @@ public class Main extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setMinimumSize(new java.awt.Dimension(500, 400));
 
-        jSplitPane.setBorder(null);
         jSplitPane.setContinuousLayout(true);
         jSplitPane.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
 
-        jTextArea1.setEditable(false);
-        jTextArea1.setColumns(20);
-        jTextArea1.setLineWrap(true);
-        jTextArea1.setRows(5);
-        jTextArea1.setBorder(null);
+        messageArea.setEditable(false);
+        messageArea.setColumns(20);
+        messageArea.setLineWrap(true);
+        messageArea.setRows(5);
 
-        javax.swing.GroupLayout rightPaneLayout = new javax.swing.GroupLayout(rightPane);
-        rightPane.setLayout(rightPaneLayout);
-        rightPaneLayout.setHorizontalGroup(
-            rightPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jTextArea1)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, rightPaneLayout.createSequentialGroup()
+        javax.swing.GroupLayout rightPanelLayout = new javax.swing.GroupLayout(rightPanel);
+        rightPanel.setLayout(rightPanelLayout);
+        rightPanelLayout.setHorizontalGroup(
+            rightPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(messageArea)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, rightPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(mensagemField)
+                .addComponent(messageField)
                 .addContainerGap())
         );
-        rightPaneLayout.setVerticalGroup(
-            rightPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(rightPaneLayout.createSequentialGroup()
-                .addComponent(jTextArea1, javax.swing.GroupLayout.PREFERRED_SIZE, 505, javax.swing.GroupLayout.PREFERRED_SIZE)
+        rightPanelLayout.setVerticalGroup(
+            rightPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(rightPanelLayout.createSequentialGroup()
+                .addComponent(messageArea, javax.swing.GroupLayout.DEFAULT_SIZE, 380, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(mensagemField, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(messageField, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
 
-        jSplitPane.setRightComponent(rightPane);
+        jSplitPane.setRightComponent(rightPanel);
 
-        jPanel1.setMinimumSize(new java.awt.Dimension(150, 0));
+        leftPanel.setMinimumSize(new java.awt.Dimension(150, 0));
 
-        jToolBar1.setFloatable(false);
-        jToolBar1.setRollover(true);
-        jToolBar1.add(filler2);
+        userToolbar.setFloatable(false);
+        userToolbar.setRollover(true);
+        userToolbar.add(filler2);
 
-        jLabel1.setText("Usuário");
-        jToolBar1.add(jLabel1);
-        jToolBar1.add(filler1);
+        userName.setText("Usuário");
+        userToolbar.add(userName);
+        userToolbar.add(filler1);
 
-        jButton1.setText("Editar");
-        jButton1.setFocusable(false);
-        jButton1.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        jButton1.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        jToolBar1.add(jButton1);
+        editProfileButton.setText("Editar");
+        editProfileButton.setFocusable(false);
+        editProfileButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        editProfileButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        userToolbar.add(editProfileButton);
 
-        jList1.setModel(new javax.swing.AbstractListModel<String>() {
+        usersList.setModel(new javax.swing.AbstractListModel<String>() {
             String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
             public int getSize() { return strings.length; }
             public String getElementAt(int i) { return strings[i]; }
         });
-        jScrollPane1.setViewportView(jList1);
+        usersPane.setViewportView(usersList);
 
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jToolBar1, javax.swing.GroupLayout.DEFAULT_SIZE, 150, Short.MAX_VALUE)
-            .addComponent(jScrollPane1)
+        javax.swing.GroupLayout leftPanelLayout = new javax.swing.GroupLayout(leftPanel);
+        leftPanel.setLayout(leftPanelLayout);
+        leftPanelLayout.setHorizontalGroup(
+            leftPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(userToolbar, javax.swing.GroupLayout.DEFAULT_SIZE, 150, Short.MAX_VALUE)
+            .addComponent(usersPane)
         );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+        leftPanelLayout.setVerticalGroup(
+            leftPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(leftPanelLayout.createSequentialGroup()
+                .addComponent(userToolbar, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 530, Short.MAX_VALUE))
+                .addComponent(usersPane, javax.swing.GroupLayout.DEFAULT_SIZE, 405, Short.MAX_VALUE))
         );
 
-        jSplitPane.setLeftComponent(jPanel1);
+        jSplitPane.setLeftComponent(leftPanel);
 
         jMenu2.setText("File");
         jMenuBar.add(jMenu2);
@@ -127,7 +125,7 @@ public class Main extends javax.swing.JFrame {
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jSplitPane)
+            .addComponent(jSplitPane, javax.swing.GroupLayout.DEFAULT_SIZE, 438, Short.MAX_VALUE)
         );
 
         pack();
@@ -175,20 +173,20 @@ public class Main extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton editProfileButton;
     private javax.swing.Box.Filler filler1;
     private javax.swing.Box.Filler filler2;
-    private javax.swing.JButton jButton1;
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JList<String> jList1;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenu jMenu3;
     private javax.swing.JMenuBar jMenuBar;
-    private javax.swing.JPanel jPanel1;
-    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JSplitPane jSplitPane;
-    private javax.swing.JTextArea jTextArea1;
-    private javax.swing.JToolBar jToolBar1;
-    private javax.swing.JTextField mensagemField;
-    private javax.swing.JPanel rightPane;
+    private javax.swing.JPanel leftPanel;
+    private javax.swing.JTextArea messageArea;
+    private javax.swing.JTextField messageField;
+    private javax.swing.JPanel rightPanel;
+    private javax.swing.JLabel userName;
+    private javax.swing.JToolBar userToolbar;
+    private javax.swing.JList<String> usersList;
+    private javax.swing.JScrollPane usersPane;
     // End of variables declaration//GEN-END:variables
 }
