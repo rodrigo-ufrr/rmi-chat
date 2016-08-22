@@ -23,6 +23,8 @@ import rmi.PeerInfo;
 public class Main extends javax.swing.JFrame {
     
     static Registry registry;
+    static Server server;
+    static Client client;
     static Peer peer;
     static PeerInfo myInfo;
     static String user = "User"; // TODO: get user from settings
@@ -38,12 +40,12 @@ public class Main extends javax.swing.JFrame {
         initComponents();
 
         // TODO: get port and username from settings
-        Server s = new Server(1099, user);
-        s.listen();
+        server = new Server(1099, user);
+        server.listen();
 
         // TODO: get port and username from settings
-        Client c = new Client(1099, user);
-        c.send("127.0.0.1", "Teste!");
+        client = new Client(1099, user);
+        client.send("127.0.0.1", "Teste!");
         
         messageField.addKeyListener(new KeyAdapter() {
             @Override
@@ -73,6 +75,15 @@ public class Main extends javax.swing.JFrame {
     private void loadChat() {
 
         String key = this.currentChat.getUUID();
+                
+        HTMLDocument doc = (HTMLDocument) messageArea.getDocument();
+        Element body = doc.getElement(doc.getDefaultRootElement(), StyleConstants.NameAttribute, HTML.Tag.BODY);
+
+        try {
+            doc.setInnerHTML(body, "<p style='margin-top:0'></p>");
+        } catch (BadLocationException | IOException ex) {
+            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+        }
         
         if (this.messages.containsKey(key)) {
             this.messages.get(key).stream().forEach((m) -> {
@@ -84,12 +95,8 @@ public class Main extends javax.swing.JFrame {
                     from = "<font color='darkgreen' style='font-weight:bold;'>"+ m.from.getUserName() +"</font>";
                 }
                 
-                HTMLDocument doc = (HTMLDocument) messageArea.getDocument();
-                
-                Element body = doc.getElement(doc.getDefaultRootElement(), StyleConstants.NameAttribute, HTML.Tag.BODY);
-                
                 try {
-                    doc.insertBeforeEnd(body, "<p>"+ from + m.message.getBody() + "</p>");
+                    doc.insertBeforeEnd(body, "<p style='margin-top:0'>"+ from + m.message.getBody() + "</p>");
 
                 } catch (BadLocationException | IOException ex) {
                     Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
@@ -110,6 +117,8 @@ public class Main extends javax.swing.JFrame {
         this.messages.get(key).add(new MessageTuple(null, body));
         
         messageField.setText("");
+        
+        client.send(this.currentChat.getIp(), body);
         
         loadChat();
     }
@@ -147,7 +156,7 @@ public class Main extends javax.swing.JFrame {
 
         messageArea.setEditable(false);
         messageArea.setContentType("text/html"); // NOI18N
-        messageArea.setText("<html>\n  <head>\n\n  </head>\n  <body>\n\n  </body>\n</html>\n");
+        messageArea.setText("<html>\n  <head>\n\n  </head>\n  <body>\n    <p style=\"margin-top: 0\">\n      Escolha um contato na lista à esquerda.\n    </p>\n  </body>\n</html>\n");
         jScrollPane1.setViewportView(messageArea);
 
         javax.swing.GroupLayout rightPanelLayout = new javax.swing.GroupLayout(rightPanel);
