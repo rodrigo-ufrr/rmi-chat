@@ -36,12 +36,13 @@ public class Peer extends UnicastRemoteObject implements PeerInterface{
 
     @Override
     public boolean send(PeerInfoInterface from, MessageInterface msg) throws RemoteException {
-        System.err.println("Message received from "+ from.getUserName() +": " + msg.getBody());
+        System.out.println("Message received from "+ from.getUserName() +": "+ msg.getBody());
         if (callback != null) {
             try {
                 callback.run(from, msg);
             } catch (Exception ex) {
-                Logger.getLogger(Peer.class.getName()).log(Level.SEVERE, null, ex);
+                System.err.println("Não foi possível exibir.");
+                ex.printStackTrace();
             }
         }
         return true;

@@ -13,8 +13,16 @@ public class PeerInfo implements PeerInfoInterface{
     protected String userName;
 
     public PeerInfo(String ip, String username) {
-        // TODO: Save UUID on disk
-        this.uuid = UUID.randomUUID().toString();
+        this(ip, username, null);
+    }
+
+    public PeerInfo(String ip, String username, String uuid) {
+        if (uuid == null && this.uuid == null) {
+            // TODO: Save UUID on disk
+            this.uuid = UUID.randomUUID().toString();
+        } else {
+            this.uuid = uuid;
+        }
         this.ip = ip;
         this.userName = username;
     }
@@ -41,10 +49,11 @@ public class PeerInfo implements PeerInfoInterface{
 
     @Override
     public boolean equals(Object o) {
-        System.out.println("ok");
-        if (o instanceof PeerInfoInterface)
+        if (o instanceof PeerInfoInterface) {
             return Objects.equals(this.getUUID(), ((PeerInfoInterface) o).getUUID());
-        else
+        } else {
+            System.out.println("epa");
             return super.equals(o);
+        }
     }
 }

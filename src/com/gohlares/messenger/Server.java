@@ -50,7 +50,7 @@ public class Server {
     }
     
     public interface MessageCallback {
-        public void run(PeerInfoInterface from, MessageInterface message);
+        void run(PeerInfoInterface from, MessageInterface message);
     }
     
     public static PeerInfo getInfo() {

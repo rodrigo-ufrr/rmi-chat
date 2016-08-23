@@ -34,7 +34,7 @@ public class Client {
         } catch (UnknownHostException ex) {
             Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
         }
-        this.info = new PeerInfo(ip, username);
+        this.info = Server.getInfo();
     }
 
     /**
@@ -51,7 +51,7 @@ public class Client {
                 System.out.println("Message sent to "+ peer.getInfo().getUserName() +": "+ body);
             }
         } catch (RemoteException ex) {
-            Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+            System.err.println("Erro ao enviar mensagem. "+ ex.getMessage());
         }
     }
     
@@ -61,7 +61,7 @@ public class Client {
             return (PeerInterface) registry.lookup("Peer");
 
         } catch (RemoteException | NotBoundException ex) {
-            Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+            System.err.println("Erro ao obter usuário. "+ ex.getMessage());
             return null;
         }
     }

@@ -7,7 +7,6 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.Callable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.DefaultListModel;
@@ -21,17 +20,20 @@ import rmi.Message;
 import rmi.PeerInfo;
 import rmi.interfaces.MessageInterface;
 import rmi.interfaces.PeerInfoInterface;
+import rmi.interfaces.PeerInterface;
 
 public class Main extends javax.swing.JFrame {
     
     static Server server;
     static Client client;
     static PeerInfo myInfo;
-    static String user = "User"; // TODO: get user from settings
+    static String user = "User"; // TODO: get user other settings
     
     private DefaultListModel usersModel = new DefaultListModel<>();
     private PeerInfo currentChat = null;
     private Map<String, ArrayList<MessageTuple>> messages = new HashMap<>();
+
+    Thread discoveryThread = new Thread(DiscoveryThread.getInstance());
 
     /**
      * Creates new form Main
@@ -39,14 +41,14 @@ public class Main extends javax.swing.JFrame {
     public Main() {
         initComponents();
 
-        // TODO: get port and username from settings
+        // TODO: get port and username other settings
         server = new Server(1099, user);
         server.listen(this::receiveMessage);
 
-        // TODO: get port and username from settings
+        // TODO: get port and username other settings
         client = new Client(1099, user);
 
-        new Thread(DiscoveryThread.getInstance()).start();
+        discoveryThread.start();
         DiscoveryThread.addListener(this::updateList);
 
         messageField.addKeyListener(new KeyAdapter() {
@@ -58,6 +60,7 @@ public class Main extends javax.swing.JFrame {
         });
         usersList.addListSelectionListener((ListSelectionEvent e) -> {
             this.currentChat = (PeerInfo) usersModel.get(e.getFirstIndex());
+            System.out.println(this.currentChat.getUUID());
             this.loadChat();
         });
 
@@ -67,12 +70,19 @@ public class Main extends javax.swing.JFrame {
     }
 
     private void updateList(String ip, String uuid) {
+
         try {
-            PeerInfoInterface found = client.get(ip).getInfo();
-            if (!usersModel.contains(found)) {
-                usersModel.add(usersModel.getSize(), found);
+            PeerInterface found = client.get(ip);
+            if (found == null) {
+                //TODO: Remover da lista
+                System.err.println("REMOVER "+ip);
             } else {
-                usersModel.set(usersModel.indexOf(found), found);
+                PeerInfoInterface foundInfo = found.getInfo();
+                if (!usersModel.contains(foundInfo)) {
+                    usersModel.add(usersModel.getSize(), foundInfo);
+                } else {
+                    usersModel.set(usersModel.indexOf(foundInfo), foundInfo);
+                }
             }
         } catch (RemoteException ex) {
             System.err.println("IP "+ ip +" não contém os objetos necessarios.");
@@ -81,15 +91,15 @@ public class Main extends javax.swing.JFrame {
     
     private void loadChat() {
 
-        String key = this.currentChat.getUUID();
-        if (key == null)
+        if (this.currentChat == null)
             return;
-                
+        String key = this.currentChat.getUUID();
+
         HTMLDocument doc = (HTMLDocument) messageArea.getDocument();
         Element body = doc.getElement(doc.getDefaultRootElement(), StyleConstants.NameAttribute, HTML.Tag.BODY);
 
         try {
-            doc.setInnerHTML(body, "<p style='margin-top:0'></p>");
+            doc.setInnerHTML(body, "<p style='margin-top:-10px'></p>");
         } catch (BadLocationException | IOException ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -98,10 +108,10 @@ public class Main extends javax.swing.JFrame {
             this.messages.get(key).forEach((m) -> {
 
                 String from;
-                if (m.from == null) { // TODO: Checar se é o próprio usuário
-                    from = "<font color='navy' style='font-weight:bold;'>Você:</font> ";
+                if (m.other) {
+                    from = "<font color='green' style='font-weight:bold;'>" + this.currentChat.getUserName() + "</font> ";
                 } else {
-                    from = "<font color='darkgreen' style='font-weight:bold;'>" + m.from.getUserName() + "</font>";
+                    from = "<font color='navy' style='font-weight:bold;'>Você:</font> ";
                 }
 
                 try {
@@ -114,18 +124,19 @@ public class Main extends javax.swing.JFrame {
         }
     }
     
-    private void addMessage(String key, String body) {
+    private void addMessage(String key, boolean other, String body) {
         if (!this.messages.containsKey(key)) {
             this.messages.put(key, new ArrayList<>());
         }
-        // TODO: Pegar PeerInfo automaticamente
-        this.messages.get(key).add(new MessageTuple(null, body));
+
+        this.messages.get(key).add(new MessageTuple(other, body));
+//        this.messages.forEach((s, messageTuples) -> messageTuples.forEach(messageTuple -> System.out.println(s+": "+messageTuple.other+" - "+messageTuple.message.getBody())));
     }
 
     private void sendMessage() {
         String key = this.currentChat.getUUID();
         String body = messageField.getText();
-        addMessage(key, body);
+        addMessage(key, false, body);
         
         messageField.setText("");
         
@@ -137,13 +148,13 @@ public class Main extends javax.swing.JFrame {
     private void receiveMessage(PeerInfoInterface from, MessageInterface message) {
         String key = from.getUUID();
         String body = message.getBody();
-        addMessage(key, body);
-        
+        addMessage(key, true, body);
+
         loadChat();
     }
 
     /**
-     * This method is called from within the constructor to initialize the form.
+     * This method is called other within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
      * regenerated by the Form Editor.
      */
@@ -285,16 +296,16 @@ public class Main extends javax.swing.JFrame {
     }
 
     public class MessageTuple {
-        public final PeerInfo from;
+        public final boolean other;
         public final Message message;
         
-        public MessageTuple(PeerInfo from, Message message) { 
-            this.from = from; 
+        public MessageTuple(boolean other, Message message) {
+            this.other = other;
             this.message = message; 
         }
         
-        public MessageTuple(PeerInfo from, String body) { 
-            this.from = from;
+        public MessageTuple(boolean other, String body) {
+            this.other = other;
             this.message = new Message(body);
         }
     }
