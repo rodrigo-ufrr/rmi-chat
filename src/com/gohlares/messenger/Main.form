@@ -155,7 +155,9 @@
                 </Component>
                 <Component class="javax.swing.JLabel" name="userName">
                   <Properties>
-                    <Property name="text" type="java.lang.String" value="Usu&#xe1;rio"/>
+                    <Property name="text" type="java.lang.String" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+                      <Connection code="user" type="code"/>
+                    </Property>
                   </Properties>
                 </Component>
                 <Component class="javax.swing.Box$Filler" name="filler1">
@@ -167,14 +169,6 @@
                   <AuxValues>
                     <AuxValue name="classDetails" type="java.lang.String" value="Box.Filler.HorizontalGlue"/>
                   </AuxValues>
-                </Component>
-                <Component class="javax.swing.JButton" name="settingsButton">
-                  <Properties>
-                    <Property name="text" type="java.lang.String" value="Config."/>
-                    <Property name="focusable" type="boolean" value="false"/>
-                    <Property name="horizontalTextPosition" type="int" value="0"/>
-                    <Property name="verticalTextPosition" type="int" value="3"/>
-                  </Properties>
                 </Component>
               </SubComponents>
             </Container>

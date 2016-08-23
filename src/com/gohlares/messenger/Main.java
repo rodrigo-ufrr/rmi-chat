@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.DefaultListModel;
+import javax.swing.JOptionPane;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Element;
@@ -27,7 +28,7 @@ public class Main extends javax.swing.JFrame {
     static Server server;
     static Client client;
     static PeerInfo myInfo;
-    static String user = "User"; // TODO: get user other settings
+    static String user = null;
     
     private DefaultListModel usersModel = new DefaultListModel<>();
     private PeerInfo currentChat = null;
@@ -59,8 +60,7 @@ public class Main extends javax.swing.JFrame {
             }
         });
         usersList.addListSelectionListener((ListSelectionEvent e) -> {
-            this.currentChat = (PeerInfo) usersModel.get(e.getFirstIndex());
-            System.out.println(this.currentChat.getUUID());
+            this.currentChat = (PeerInfo) usersModel.get(usersList.getSelectedIndex());
             this.loadChat();
         });
 
@@ -109,7 +109,7 @@ public class Main extends javax.swing.JFrame {
 
                 String from;
                 if (m.other) {
-                    from = "<font color='green' style='font-weight:bold;'>" + this.currentChat.getUserName() + "</font> ";
+                    from = "<font color='green' style='font-weight:bold;'>" + this.currentChat.getUserName() + ":</font> ";
                 } else {
                     from = "<font color='navy' style='font-weight:bold;'>Você:</font> ";
                 }
@@ -172,7 +172,6 @@ public class Main extends javax.swing.JFrame {
         filler2 = new javax.swing.Box.Filler(new java.awt.Dimension(8, 0), new java.awt.Dimension(8, 0), new java.awt.Dimension(8, 32767));
         userName = new javax.swing.JLabel();
         filler1 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(32767, 0));
-        settingsButton = new javax.swing.JButton();
         usersPane = new javax.swing.JScrollPane();
         usersList = new javax.swing.JList<>();
 
@@ -216,15 +215,9 @@ public class Main extends javax.swing.JFrame {
         userToolbar.setRollover(true);
         userToolbar.add(filler2);
 
-        userName.setText("Usuário");
+        userName.setText(user);
         userToolbar.add(userName);
         userToolbar.add(filler1);
-
-        settingsButton.setText("Config.");
-        settingsButton.setFocusable(false);
-        settingsButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        settingsButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        userToolbar.add(settingsButton);
 
         usersList.setModel(new javax.swing.AbstractListModel<String>() {
             String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
@@ -289,6 +282,12 @@ public class Main extends javax.swing.JFrame {
         }
         //</editor-fold>
 
+        user = (String) JOptionPane.showInputDialog(null, "Escolha um nome de usuário: ", "RMI Chat", JOptionPane.YES_OPTION);
+        
+        if (user == null) {
+            return;
+        }
+        
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(() -> {
             new Main().setVisible(true);
@@ -319,7 +318,6 @@ public class Main extends javax.swing.JFrame {
     private javax.swing.JEditorPane messageArea;
     private javax.swing.JTextField messageField;
     private javax.swing.JPanel rightPanel;
-    private javax.swing.JButton settingsButton;
     private javax.swing.JLabel userName;
     private javax.swing.JToolBar userToolbar;
     private javax.swing.JList<String> usersList;
