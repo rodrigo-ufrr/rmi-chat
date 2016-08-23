@@ -6,8 +6,10 @@ import java.util.Date;
 public class Message implements MessageInterface{
     private static final long serialVersionUID = 1;
     private final String body;
+    private Date date;
 
     public Message(String body) {
+        this.date = new Date();
         this.body = body;
     }
 
@@ -18,7 +20,7 @@ public class Message implements MessageInterface{
 
     @Override
     public Date getDate() {
-        return null;
+        return this.date;
     }
     
 }

@@ -42,16 +42,21 @@ public class Client {
      * @param body O conteúdo da mensagem.
      */
     public void send(String ip, String body) {
-        PeerInterface peer = get(ip);
-        boolean response;
-        try {
-            response = peer.send(info, new Message(body));
-            if(response) {
-                System.out.println("Message sent to "+ peer.getInfo().getUserName() +": "+ body);
+        
+        new Thread(()->{
+            boolean response;
+            try {
+                PeerInterface peer = get(ip);
+                response = peer.send(info, new Message(body));
+
+                if(response) {
+                    System.out.println("Message sent to "+ peer.getInfo().getUserName() +": "+ body);
+                }
+            } catch (RemoteException ex) {
+                Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
             }
-        } catch (RemoteException ex) {
-            System.err.println("Erro ao enviar mensagem. "+ ex.getMessage());
-        }
+        }).start();
+
     }
     
     /**
