@@ -2,7 +2,6 @@ package com.gohlares.messenger;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.rmi.AccessException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import rmi.interfaces.PeerInterface;
@@ -55,6 +54,9 @@ public class Client {
         }
     }
     
+    /**
+     * Pega um Peer dado um endereço de IP.
+     */
     public PeerInterface get(String ip) {
         try {
             registry = LocateRegistry.getRegistry(ip, this.port);

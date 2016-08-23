@@ -15,6 +15,9 @@ import rmi.interfaces.MessageInterface;
 import rmi.interfaces.PeerInfoInterface;
 import rmi.interfaces.PeerInterface;
 
+/**
+ * Classe responsável por receber mensagens.
+ */
 public class Server {
     static Peer peer;
     static Registry registry;
@@ -22,6 +25,10 @@ public class Server {
     private int port;
     private String username;
 
+    /**
+     * @param port A porta de comunicação do chat
+     * @param username O nome de usuário que aparecerá para os outros usuários.
+     */
     public Server(int port, String username) {
         this.port = port;
         this.username = username;
@@ -32,6 +39,10 @@ public class Server {
         }
     }
     
+    /**
+     * Habilita o recebimento de mensagens.
+     * @param callback Função a ser executada ao receber uma mensagem.
+     */
     public void listen(MessageCallback callback) {
         try {
             peer = new Peer(new PeerInfo(this.ip, this.username), callback);
@@ -49,10 +60,18 @@ public class Server {
 	}
     }
     
+    /**
+     * Interface para a função de callback, que deve ser implementada para uso
+     * como parâmetro da função listen().
+     */
     public interface MessageCallback {
         void run(PeerInfoInterface from, MessageInterface message);
     }
     
+    /**
+     * Obtém as informações deste usuário.
+     * @return Retorna o PeerInfo do usuário.
+     */
     public static PeerInfo getInfo() {
         try {
             return (PeerInfo) Server.peer.getInfo();
