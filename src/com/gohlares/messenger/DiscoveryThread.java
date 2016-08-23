@@ -21,15 +21,16 @@ public class DiscoveryThread implements Runnable {
     @Override
     public void run() {
         try {
-            //Keep a socket open to listen to all the UDP traffic that is destined for this port
+            //Abre um socket pra receber do broadcast
             recvSocket = new DatagramSocket(1098, InetAddress.getByName("0.0.0.0"));
             recvSocket.setBroadcast(true);
 
+            //Abre um socket para enviar no broadcast
             sendSocket = new DatagramSocket();
             sendSocket.setBroadcast(true);
 
             while (true) {
-                //Send a packet
+                //Envia um pacote com o UUID do servidor para o broadcast
                 try {
                     byte[] sendBuf = Server.getInfo().getUUID().getBytes();
                     DatagramPacket sendPacket = new DatagramPacket(sendBuf, sendBuf.length, InetAddress.getByName("255.255.255.255"), 1098);
@@ -38,15 +39,16 @@ public class DiscoveryThread implements Runnable {
                     System.err.println("Nenhum UUID no servidor.");
                 }
 
-                //Receive a packet
+                //Recebe um pacote
                 byte[] recvBuf = new byte[15000];
                 DatagramPacket packet = new DatagramPacket(recvBuf, recvBuf.length);
                 recvSocket.receive(packet);
 
-                //Packet received
+                //Trata o pacote recebido
                 String ip = packet.getAddress().getHostAddress();
                 String uuid = new String(packet.getData());
 
+                //Executa todos os callbacks
                 for (Callback l : listeners) {
                     l.run(ip, uuid);
                 }
@@ -60,15 +62,26 @@ public class DiscoveryThread implements Runnable {
         }
     }
     
+    /**
+     * Adiciona um listener para quando um usuário for descoberto na rede.
+     * @param listener A função de callback
+     */
     public static void addListener(Callback listener) {
         listeners.add(listener);
     }
     
+    /**
+     * Remove um listener.
+     * @param listener
+     */
     public static void removeListener(Callback listener) {
         listeners.remove(listener);
     }
     
-    public static void clearListeners(Callback listener) {
+    /**
+     * Remove todos os listeners
+     */
+    public static void clearListeners() {
         listeners.clear();
     }
     
