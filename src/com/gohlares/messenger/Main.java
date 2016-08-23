@@ -69,6 +69,11 @@ public class Main extends javax.swing.JFrame {
         usersModel.add(0, Server.getInfo());
     }
 
+    /**
+     * Insere um usuário na lista, caso ele ainda não esteja
+     * @param ip O IP do usuário a ser adicionado
+     * @param uuid o UUID do usuário a ser adicionado
+     */
     private void updateList(String ip, String uuid) {
 
         try {
@@ -89,6 +94,9 @@ public class Main extends javax.swing.JFrame {
         }
     }
     
+    /**
+     * Carrega o HTML do chat que estiver em foco
+     */
     private void loadChat() {
 
         if (this.currentChat == null)
@@ -124,6 +132,12 @@ public class Main extends javax.swing.JFrame {
         }
     }
     
+    /**
+     * Adiciona uma mensagem à lista de conversas
+     * @param key O UUID do usuário com o qual acontece a conversa
+     * @param other `true` se a mensagem for do outro usuário e `false` se for o próprio usuário
+     * @param body O conteúdo da mensagem
+     */
     private void addMessage(String key, boolean other, String body) {
         if (!this.messages.containsKey(key)) {
             this.messages.put(key, new ArrayList<>());
@@ -133,6 +147,10 @@ public class Main extends javax.swing.JFrame {
 //        this.messages.forEach((s, messageTuples) -> messageTuples.forEach(messageTuple -> System.out.println(s+": "+messageTuple.other+" - "+messageTuple.message.getBody())));
     }
 
+    /**
+     * Envia a mensagem contida no campo de texto para o destinatário referente
+     * à conversa aberta. Além disso, salva a mensagem enviada e exibe no HTML.
+     */
     private void sendMessage() {
         String key = this.currentChat.getUUID();
         String body = messageField.getText();
@@ -145,6 +163,11 @@ public class Main extends javax.swing.JFrame {
         loadChat();
     }
 
+    /**
+     * Adiciona à lista de conversas uma mensagem recebida e a exibe no HTML.
+     * @param from Remetente da mensagem.
+     * @param message A mensagem recebida.
+     */
     private void receiveMessage(PeerInfoInterface from, MessageInterface message) {
         String key = from.getUUID();
         String body = message.getBody();
