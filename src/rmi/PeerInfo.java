@@ -1,6 +1,5 @@
 package rmi;
 
-import java.rmi.RemoteException;
 import java.util.UUID;
 
 import rmi.interfaces.PeerInfoInterface;

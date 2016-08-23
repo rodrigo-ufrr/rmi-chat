@@ -53,9 +53,9 @@ public class Server {
         public void run(PeerInfoInterface from, MessageInterface message);
     }
     
-    public PeerInfo getInfo() {
+    public static PeerInfo getInfo() {
         try {
-            return (PeerInfo) this.peer.getInfo();
+            return (PeerInfo) Server.peer.getInfo();
         } catch (RemoteException ex) {
             Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
             return null;

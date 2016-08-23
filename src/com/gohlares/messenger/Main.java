@@ -47,7 +47,9 @@ public class Main extends javax.swing.JFrame {
 
         // TODO: get port and username from settings
         client = new Client(1099, user);
-        
+
+        DiscoveryThread.getInstance().run();
+
         messageField.addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
