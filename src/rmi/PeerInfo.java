@@ -1,5 +1,6 @@
 package rmi;
 
+import java.util.Objects;
 import java.util.UUID;
 
 import rmi.interfaces.PeerInfoInterface;
@@ -36,5 +37,14 @@ public class PeerInfo implements PeerInfoInterface{
     @Override
     public String toString() {
         return this.getUserName();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        System.out.println("ok");
+        if (o instanceof PeerInfoInterface)
+            return Objects.equals(this.getUUID(), ((PeerInfoInterface) o).getUUID());
+        else
+            return super.equals(o);
     }
 }

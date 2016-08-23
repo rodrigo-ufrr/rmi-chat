@@ -29,7 +29,7 @@ public class Main extends javax.swing.JFrame {
     static PeerInfo myInfo;
     static String user = "User"; // TODO: get user from settings
     
-    private DefaultListModel usersModel = null;
+    private DefaultListModel usersModel = new DefaultListModel<>();
     private PeerInfo currentChat = null;
     private Map<String, ArrayList<MessageTuple>> messages = new HashMap<>();
 
@@ -41,14 +41,13 @@ public class Main extends javax.swing.JFrame {
 
         // TODO: get port and username from settings
         server = new Server(1099, user);
-        server.listen((PeerInfoInterface from, MessageInterface message) -> {
-            receiveMessage(from, message);
-        });
+        server.listen(this::receiveMessage);
 
         // TODO: get port and username from settings
         client = new Client(1099, user);
 
-        DiscoveryThread.getInstance().run();
+        new Thread(DiscoveryThread.getInstance()).start();
+        DiscoveryThread.addListener(this::updateList);
 
         messageField.addKeyListener(new KeyAdapter() {
             @Override
@@ -62,21 +61,22 @@ public class Main extends javax.swing.JFrame {
             this.loadChat();
         });
 
-        this.updateList();
-    }
-
-    private void updateList() {
-        if (usersModel == null)
-            usersModel = new DefaultListModel<>();
-
         usersList.setModel(usersModel);
 
-        usersModel.add(0, server.getInfo());
-//        try {
-//            usersModel.add(1, client.get("192.168.0.104").getInfo());
-//        } catch (RemoteException ex) {
-//            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
-//        }
+        usersModel.add(0, Server.getInfo());
+    }
+
+    private void updateList(String ip, String uuid) {
+        try {
+            PeerInfoInterface found = client.get(ip).getInfo();
+            if (!usersModel.contains(found)) {
+                usersModel.add(usersModel.getSize(), found);
+            } else {
+                usersModel.set(usersModel.indexOf(found), found);
+            }
+        } catch (RemoteException ex) {
+            System.err.println("IP "+ ip +" não contém os objetos necessarios.");
+        }
     }
     
     private void loadChat() {
@@ -95,17 +95,17 @@ public class Main extends javax.swing.JFrame {
         }
         
         if (this.messages.containsKey(key)) {
-            this.messages.get(key).stream().forEach((m) -> {
-                
+            this.messages.get(key).forEach((m) -> {
+
                 String from;
                 if (m.from == null) { // TODO: Checar se é o próprio usuário
                     from = "<font color='navy' style='font-weight:bold;'>Você:</font> ";
                 } else {
-                    from = "<font color='darkgreen' style='font-weight:bold;'>"+ m.from.getUserName() +"</font>";
+                    from = "<font color='darkgreen' style='font-weight:bold;'>" + m.from.getUserName() + "</font>";
                 }
-                
+
                 try {
-                    doc.insertBeforeEnd(body, "<p style='margin-top:0'>"+ from + m.message.getBody() + "</p>");
+                    doc.insertBeforeEnd(body, "<p style='margin-top:0'>" + from + m.message.getBody() + "</p>");
 
                 } catch (BadLocationException | IOException ex) {
                     Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
@@ -284,8 +284,8 @@ public class Main extends javax.swing.JFrame {
         });
     }
 
-    public class MessageTuple { 
-        public final PeerInfo from; 
+    public class MessageTuple {
+        public final PeerInfo from;
         public final Message message;
         
         public MessageTuple(PeerInfo from, Message message) { 
@@ -297,7 +297,7 @@ public class Main extends javax.swing.JFrame {
             this.from = from;
             this.message = new Message(body);
         }
-    } 
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.Box.Filler filler1;
